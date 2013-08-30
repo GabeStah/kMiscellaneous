@@ -1,6 +1,5 @@
 kMiscellaneous
 ==============
-PURPOSE
 kMiscellaneous is a World of Warcraft interface addon created by Kulldar of US-Hyjal and overall isn't meant to serve many purposes. :)  It exists for a personal tool to solve a few *very specific* problems that I couldn't easily solve with other addons.  The feature list for this addon will expand over time, but you're likely only going to use this if you need access to one of the very specific features found below.
 
 FEATURES
