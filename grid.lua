@@ -5,14 +5,23 @@ local select, pairs, print, next, type, unpack = select, pairs, print, next, typ
 local loadstring, assert, error = loadstring, assert, error
 local kMiscellaneous = _G.kMiscellaneous
 
---[[ Update Grid settings
+--[[ Copy settings from Grid
 ]]
-function kMiscellaneous:Grid_Update()
+function kMiscellaneous:Grid_CopySettings(size)
 	if not self:Grid_IsLoaded() then return end
-	if not self.db.profile.grid.autoPosition.enabled then return end
-	local size = self:Grid_GetRaidSize()
 	if not size or not self.db.profile.grid.autoPosition[size] then return end
-	self:Grid_SetPosition(self.db.profile.grid.autoPosition[size].x, self.db.profile.grid.autoPosition[size].y)
+	-- get and update coordinates
+	local x, y = self:Grid_GetCoordinates()
+	if not x or not y then return end
+	self.db.profile.grid.autoPosition[size].x = tostring(x)
+	self.db.profile.grid.autoPosition[size].y = tostring(y)
+end
+
+--[[ Get current Grid coordinates
+]]
+function kMiscellaneous:Grid_GetCoordinates()
+	if not self:Grid_IsLoaded() then return end
+	return Grid.modules.GridLayout.db.profile.PosX, Grid.modules.GridLayout.db.profile.PosY
 end
 
 --[[ Get the raid size as appropriate to the position settings
@@ -68,6 +77,14 @@ function kMiscellaneous:Grid_GetRaidSize()
 	end
 end
 
+--[[ Check if Grid is loaded
+]]
+function kMiscellaneous:Grid_IsLoaded()
+	if not IsAddOnLoaded('Grid') then return end
+	if not Grid or not Grid.modules or not Grid.modules.GridLayout then return end
+	return true
+end
+
 --[[ Move Grid position
 ]]
 function kMiscellaneous:Grid_SetPosition(x,y)
@@ -77,10 +94,12 @@ function kMiscellaneous:Grid_SetPosition(x,y)
 	Grid.modules.GridLayout:RestorePosition()
 end
 
---[[ Check if Grid is loaded
+--[[ Update Grid settings
 ]]
-function kMiscellaneous:Grid_IsLoaded()
-	if not IsAddOnLoaded('Grid') then return end
-	if not Grid or not Grid.modules or not Grid.modules.GridLayout then return end
-	return true
+function kMiscellaneous:Grid_Update()
+	if not self:Grid_IsLoaded() then return end
+	if not self.db.profile.grid.autoPosition.enabled then return end
+	local size = self:Grid_GetRaidSize()
+	if not size or not self.db.profile.grid.autoPosition[size] then return end
+	self:Grid_SetPosition(self.db.profile.grid.autoPosition[size].x, self.db.profile.grid.autoPosition[size].y)
 end

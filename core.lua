@@ -46,9 +46,8 @@ function kMiscellaneous:InitializeSettings()
 end
 
 function kMiscellaneous:InitializeEvents()
-	self:RegisterEvent('ZONE_CHANGED', 'Event_OnZoneChanged')
-	self:RegisterEvent('ZONE_CHANGED_INDOORS', 'Event_OnZoneChanged')
 	self:RegisterEvent('ZONE_CHANGED_NEW_AREA', 'Event_OnZoneChanged')
+	self:RegisterEvent('RAID_INSTANCE_WELCOME', 'Event_OnRaidInstanceWelcome')
 end
 
 function kMiscellaneous:InitializeTimers()

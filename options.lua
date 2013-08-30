@@ -70,6 +70,16 @@ kMiscellaneous.options = {
 							name = 'Solo',
 							type = 'group',
 							args = {
+								current = {
+									type = 'execute',
+									name = 'Copy from Grid',
+									desc = 'Copy the settings from Grid and save in this configuration.',
+									func = function() 
+										kMiscellaneous:Grid_CopySettings('solo')
+									end,
+									order = 1,
+									width = 'full',
+								},
 								x = {
 									name = 'X coordinate',
 									desc = 'Default x coordinate while solo.',
@@ -81,7 +91,7 @@ kMiscellaneous.options = {
 									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.solo.x end,
 									pattern = '^[+-]?%d+$',
 									usage = 'Requires a valid integer for the X coord of Grid.',
-									order = 1,
+									order = 2,
 								},
 								y = {
 									name = 'Y coordinate',
@@ -94,7 +104,7 @@ kMiscellaneous.options = {
 									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.solo.y end,
 									pattern = '^[+-]?%d+$',
 									usage = 'Requires a valid integer for the Y coord of Grid.',
-									order = 2,
+									order = 3,
 								},
 							},
 						},
@@ -102,6 +112,16 @@ kMiscellaneous.options = {
 							name = '5-man',
 							type = 'group',
 							args = {
+								current = {
+									type = 'execute',
+									name = 'Copy from Grid',
+									desc = 'Copy the settings from Grid and save in this configuration.',
+									func = function() 
+										kMiscellaneous:Grid_CopySettings('five')
+									end,
+									order = 1,
+									width = 'full',
+								},
 								x = {
 									name = 'X coordinate',
 									desc = 'Default x coordinate for 5-man party size.',
@@ -134,6 +154,16 @@ kMiscellaneous.options = {
 							name = '10-man',
 							type = 'group',
 							args = {
+								current = {
+									type = 'execute',
+									name = 'Copy from Grid',
+									desc = 'Copy the settings from Grid and save in this configuration.',
+									func = function() 
+										kMiscellaneous:Grid_CopySettings('ten')
+									end,
+									order = 1,
+									width = 'full',
+								},
 								x = {
 									name = 'X coordinate',
 									desc = 'Default x coordinate for 10-man raid size.',
@@ -166,6 +196,16 @@ kMiscellaneous.options = {
 							name = '25-man',
 							type = 'group',
 							args = {
+								current = {
+									type = 'execute',
+									name = 'Copy from Grid',
+									desc = 'Copy the settings from Grid and save in this configuration.',
+									func = function() 
+										kMiscellaneous:Grid_CopySettings('twentyfive')
+									end,
+									order = 1,
+									width = 'full',
+								},
 								x = {
 									name = 'X coordinate',
 									desc = 'Default x coordinate for 25-man raid size.',
