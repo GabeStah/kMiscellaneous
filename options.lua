@@ -16,23 +16,35 @@ kMiscellaneous.defaults = {
 			threshold = 1,
 		},
 		grid = {
-			autoPosition = {
+			layout = {
 				enabled = true,
 				five = {
+					anchor = 'TOPLEFT',				
 					x = '512',
 					y = '-646',
+					width = 75,
+					height = 38,
 				},
 				solo = {
+					anchor = 'TOPLEFT',				
 					x = '512',
 					y = '-646',
+					width = 75,
+					height = 38,
 				},
 				ten = {
+					anchor = 'TOPLEFT',
 					x = '512',
 					y = '-646',
+					width = 75,
+					height = 38,
 				},
 				twentyfive = {
+					anchor = 'TOPLEFT',
 					x = '307',
 					y = '-374',
+					width = 75,
+					height = 38,
 				},
 			},
 		},
@@ -52,187 +64,19 @@ kMiscellaneous.options = {
 			name = 'Grid',
 			type = 'group',
 			args = {
-				autoPosition = {
-					name = 'Auto-Position',
+				layout = {
+					name = 'Grid Layout',
 					type = 'group',
 					args = {
 						enabled = {
 							name = 'Enable',
 							type = 'toggle',
-							desc = 'Toggle Grid auto-position.',
+							desc = 'Toggle Grid auto-layout configurations.',
 							set = function(info,value) 
-								kMiscellaneous.db.profile.grid.autoPosition.enabled = value
-								kMiscellaneous:Grid_Update()
+								kMiscellaneous.db.profile.grid.layout.enabled = value
+								kMiscellaneous:Grid_UpdateSettings()
 							end,
-							get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.enabled end,
-						},
-						solo = {
-							name = 'Solo',
-							type = 'group',
-							args = {
-								current = {
-									type = 'execute',
-									name = 'Copy from Grid',
-									desc = 'Copy the settings from Grid and save in this configuration.',
-									func = function() 
-										kMiscellaneous:Grid_CopySettings('solo')
-									end,
-									order = 1,
-									width = 'full',
-								},
-								x = {
-									name = 'X coordinate',
-									desc = 'Default x coordinate while solo.',
-									type = 'input',
-									set = function(info,value)
-										kMiscellaneous.db.profile.grid.autoPosition.solo.x = value
-										kMiscellaneous:Grid_Update()
-									end,
-									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.solo.x end,
-									pattern = '^[+-]?%d+$',
-									usage = 'Requires a valid integer for the X coord of Grid.',
-									order = 2,
-								},
-								y = {
-									name = 'Y coordinate',
-									desc = 'Default y coordinate while solo.',
-									type = 'input',
-									set = function(info,value)
-										kMiscellaneous.db.profile.grid.autoPosition.solo.y = value
-										kMiscellaneous:Grid_Update()
-									end,
-									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.solo.y end,
-									pattern = '^[+-]?%d+$',
-									usage = 'Requires a valid integer for the Y coord of Grid.',
-									order = 3,
-								},
-							},
-						},
-						five = {
-							name = '5-man',
-							type = 'group',
-							args = {
-								current = {
-									type = 'execute',
-									name = 'Copy from Grid',
-									desc = 'Copy the settings from Grid and save in this configuration.',
-									func = function() 
-										kMiscellaneous:Grid_CopySettings('five')
-									end,
-									order = 1,
-									width = 'full',
-								},
-								x = {
-									name = 'X coordinate',
-									desc = 'Default x coordinate for 5-man party size.',
-									type = 'input',
-									set = function(info,value)
-										kMiscellaneous.db.profile.grid.autoPosition.five.x = value
-										kMiscellaneous:Grid_Update()
-									end,
-									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.five.x end,
-									pattern = '^[+-]?%d+$',
-									usage = 'Requires a valid integer for the X coord of Grid.',
-									order = 1,
-								},
-								y = {
-									name = 'Y coordinate',
-									desc = 'Default y coordinate for 5-man party size.',
-									type = 'input',
-									set = function(info,value)
-										kMiscellaneous.db.profile.grid.autoPosition.five.y = value
-										kMiscellaneous:Grid_Update()
-									end,
-									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.five.y end,
-									pattern = '^[+-]?%d+$',
-									usage = 'Requires a valid integer for the Y coord of Grid.',
-									order = 2,
-								},
-							},
-						},
-						ten = {
-							name = '10-man',
-							type = 'group',
-							args = {
-								current = {
-									type = 'execute',
-									name = 'Copy from Grid',
-									desc = 'Copy the settings from Grid and save in this configuration.',
-									func = function() 
-										kMiscellaneous:Grid_CopySettings('ten')
-									end,
-									order = 1,
-									width = 'full',
-								},
-								x = {
-									name = 'X coordinate',
-									desc = 'Default x coordinate for 10-man raid size.',
-									type = 'input',
-									set = function(info,value)
-										kMiscellaneous.db.profile.grid.autoPosition.ten.x = value
-										kMiscellaneous:Grid_Update()
-									end,
-									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.ten.x end,
-									pattern = '^[+-]?%d+$',
-									usage = 'Requires a valid integer for the X coord of Grid.',
-									order = 1,
-								},
-								y = {
-									name = 'Y coordinate',
-									desc = 'Default y coordinate for 10-man raid size.',
-									type = 'input',
-									set = function(info,value)
-										kMiscellaneous.db.profile.grid.autoPosition.ten.y = value
-										kMiscellaneous:Grid_Update()
-									end,
-									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.ten.y end,
-									pattern = '^[+-]?%d+$',
-									usage = 'Requires a valid integer for the Y coord of Grid.',
-									order = 2,
-								},
-							},
-						},
-						twentyfive = {
-							name = '25-man',
-							type = 'group',
-							args = {
-								current = {
-									type = 'execute',
-									name = 'Copy from Grid',
-									desc = 'Copy the settings from Grid and save in this configuration.',
-									func = function() 
-										kMiscellaneous:Grid_CopySettings('twentyfive')
-									end,
-									order = 1,
-									width = 'full',
-								},
-								x = {
-									name = 'X coordinate',
-									desc = 'Default x coordinate for 25-man raid size.',
-									type = 'input',
-									set = function(info,value)
-										kMiscellaneous.db.profile.grid.autoPosition.twentyfive.x = value
-										kMiscellaneous:Grid_Update()
-									end,
-									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.twentyfive.x end,
-									pattern = '^[+-]?%d+$',
-									usage = 'Requires a valid integer for the X coord of Grid.',
-									order = 1,
-								},
-								y = {
-									name = 'Y coordinate',
-									desc = 'Default y coordinate for 25-man raid size.',
-									type = 'input',
-									set = function(info,value)
-										kMiscellaneous.db.profile.grid.autoPosition.twentyfive.y = value
-										kMiscellaneous:Grid_Update()
-									end,
-									get = function(info) return kMiscellaneous.db.profile.grid.autoPosition.twentyfive.y end,
-									pattern = '^[+-]?%d+$',
-									usage = 'Requires a valid integer for the Y coord of Grid.',
-									order = 2,
-								},
-							},
+							get = function(info) return kMiscellaneous.db.profile.grid.layout.enabled end,
 						},
 					},
 				},
@@ -308,6 +152,91 @@ kMiscellaneous.options = {
         },
 	},
 };
+
+--[[ Create Grid options
+]]
+function kMiscellaneous:Options_GenerateGridOptions()
+	for iSize,raidFormat in pairs(self.grid.formats) do
+		kMiscellaneous.options.args.grid.args.layout.args[raidFormat.id] = {
+			name = raidFormat.name,
+			type = 'group',
+			args = {},
+		}	
+		for iConfig,vConfig in pairs(self.grid.config) do
+			kMiscellaneous.options.args.grid.args.layout.args[raidFormat.id].args[vConfig.group] = {
+				name = vConfig.group,
+				type = 'header',
+			}
+			for iValue,data in pairs(vConfig.values) do
+				-- X/Y
+				if data.localKey == 'x' or data.localKey == 'y' then
+					kMiscellaneous.options.args.grid.args.layout.args[raidFormat.id].args[data.localKey] = {
+						name = ('%s coordinate'):format(data.localKey),
+						desc = ('Default %s coordinate for %s configuration.'):format(data.localKey, raidFormat.name),
+						type = 'input',
+						set = function(info,value)
+							kMiscellaneous:Grid_SaveSetting(raidFormat.id, data.localKey, value)
+						end,
+						get = function(info) return kMiscellaneous:Grid_GetSetting(raidFormat.id, data.localKey) end,
+						pattern = '^[+-]?%d+$',
+						usage = ('Requires a valid integer for the %s coord of Grid.'):format(data.localKey),
+					}
+				end
+				if data.localKey == 'width' or data.localKey == 'height' then
+					kMiscellaneous.options.args.grid.args.layout.args[raidFormat.id].args[data.localKey] = {
+						name = ('Frame %s'):format(data.localKey),
+						desc = ('Default frame %s for %s configuration.'):format(data.localKey, raidFormat.name),
+						type = 'range', min = 10, max = 100, step = 1,
+						set = function(info,value)
+							kMiscellaneous:Grid_SaveSetting(raidFormat.id, data.localKey, value)
+						end,
+						get = function(info) return kMiscellaneous:Grid_GetSetting(raidFormat.id, data.localKey) end,
+					}
+				end
+				if data.localKey == 'anchor' then
+					kMiscellaneous.options.args.grid.args.layout.args[raidFormat.id].args[data.localKey] = {
+						name = 'Anchor',
+						desc = ('Default anchor point for %s configuration.'):format(raidFormat.name),
+						type = 'select',
+						values = {
+							CENTER = 'CENTER',
+							TOP = 'TOP',
+							LEFT = 'LEFT',
+							RIGHT = 'RIGHT',
+							BOTTOM = 'BOTTOM',
+							TOPLEFT = 'TOPLEFT',
+							TOPRIGHT = 'TOPRIGHT',
+							BOTTOMLEFT = 'BOTTOMLEFT',
+							BOTTOMRIGHT = 'BOTTOMRIGHT',
+						},
+						style = 'dropdown',
+						set = function(info,value)
+							kMiscellaneous:Grid_SaveSetting(raidFormat.id, data.localKey, value)
+						end,
+						get = function(info) return kMiscellaneous:Grid_GetSetting(raidFormat.id, data.localKey) end,
+					}
+				end
+			end
+			-- Addon settings
+			kMiscellaneous.options.args.grid.args.layout.args[raidFormat.id].args.copy = {
+				type = 'execute',
+				name = 'Copy from Grid',
+				desc = ('Copy the settings from Grid and save to the %s configuration.'):format(raidFormat.name),
+				func = function() 
+					kMiscellaneous:Grid_CopySettings(raidFormat.id)
+				end,
+				order = 1,
+				width = 'full',
+			}
+		end
+	end
+end
+
+--[[ Generate dynamic options
+]]
+function kMiscellaneous:Options_Generate()
+	self:Options_GenerateGridOptions()
+end
 
 --[[ Retrieve the selected key in the data table
 ]]

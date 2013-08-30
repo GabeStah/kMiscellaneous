@@ -17,6 +17,8 @@ function kMiscellaneous:OnInitialize()
 	self.options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	self.config = LibStub("AceConfig-3.0"):RegisterOptionsTable("kMiscellaneous", self.options, {"kmiscellaneous", "kmisc", "km"})
 	self.dialog = LibStub("AceConfigDialog-3.0")
+	-- Generate options
+	self:Options_Generate()
 	-- Init events
 	self:InitializeEvents()
 end
@@ -33,13 +35,126 @@ function kMiscellaneous:InitializeSettings()
 		purple = {r=1, g=0, b=1},
 		yellow = {r=1, g=1, b=0},
 	}	
+	self.grid = {}
+	self.grid.config = {
+		GridLayout = {
+			group = 'Coordinates',
+			values = {
+				{
+					localKey = 'x',
+					remoteKey = 'PosX',
+					beforeCopy = 'tostring',
+					afterSave = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridLayout:RestorePosition()
+						end
+					end,
+					afterUpdate = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridLayout:RestorePosition()
+						end
+					end,
+					module = 'GridLayout',
+				},
+				{
+					localKey = 'y',
+					remoteKey = 'PosY',
+					beforeCopy = 'tostring',
+					afterSave = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridLayout:RestorePosition()
+						end
+					end,
+					afterUpdate = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridLayout:RestorePosition()
+						end
+					end,
+					module = 'GridLayout',
+				},
+				{
+					localKey = 'anchor',
+					remoteKey = 'anchorRel',
+					beforeCopy = 'tostring',
+					afterSave = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridLayout:RestorePosition()
+						end
+					end,
+					afterUpdate = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridLayout:RestorePosition()
+						end
+					end,
+					module = 'GridLayout',
+				},
+			},
+		},
+		GridFrame = {
+			group = 'Size',
+			values = {
+				{
+					localKey = 'width',
+					remoteKey = 'frameWidth',
+					afterSave = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridFrame:ResizeAllFrames()
+							Grid.modules.GridFrame:ScheduleTimer("Grid_ReloadLayout", 0.5)
+						end
+					end,
+					afterUpdate = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridFrame:ResizeAllFrames()
+							Grid.modules.GridFrame:ScheduleTimer("Grid_ReloadLayout", 0.5)
+						end
+					end,
+					module = 'GridFrame',
+				},
+				{
+					localKey = 'height',
+					remoteKey = 'frameHeight',
+					afterSave = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridFrame:ResizeAllFrames()
+							Grid.modules.GridFrame:ScheduleTimer("Grid_ReloadLayout", 0.5)
+						end
+					end,
+					afterUpdate = function()
+						if kMiscellaneous:Grid_IsLoaded() then
+							Grid.modules.GridFrame:ResizeAllFrames()
+							Grid.modules.GridFrame:ScheduleTimer("Grid_ReloadLayout", 0.5)
+						end
+					end,
+					module = 'GridFrame',
+				},
+			},
+		},
+	}
+	self.grid.formats = {
+		{
+			id = 'solo',
+			name = 'Solo',
+		},
+		{
+			id = 'five',
+			name = '5-man',
+		},
+		{
+			id = 'ten',
+			name = '10-man',
+		},
+		{
+			id = 'twentyfive',
+			name = '25-man',
+		},
+	}	
 	self.uniqueIdLength = 8
 	self.update = {}
 	self.update.core = {} -- House update script for general purpose
 	self.versions = {}	
-	
+		
 	-- Update Grid
-	self:Grid_Update()
+	self:Grid_UpdateSettings()
 	
 	-- Mature language filter
 	BNSetMatureLanguageFilter(self.db.profile.cvars.matureLanguageFilterEnabled)

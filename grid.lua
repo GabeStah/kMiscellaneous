@@ -7,26 +7,39 @@ local kMiscellaneous = _G.kMiscellaneous
 
 --[[ Copy settings from Grid
 ]]
-function kMiscellaneous:Grid_CopySettings(size)
+function kMiscellaneous:Grid_CopySettings(raidFormat)
 	if not self:Grid_IsLoaded() then return end
-	if not size or not self.db.profile.grid.autoPosition[size] then return end
-	-- get and update coordinates
-	local x, y = self:Grid_GetCoordinates()
-	if not x or not y then return end
-	self.db.profile.grid.autoPosition[size].x = tostring(x)
-	self.db.profile.grid.autoPosition[size].y = tostring(y)
+	local layout = self:Grid_GetLayout(raidFormat)
+	if not layout then return end
+	-- Loop through config
+	for i,v in pairs(self.grid.config) do
+		-- Loop through values
+		for iValue,config in pairs(v.values) do
+			self:Grid_ConfigBeforeCopy(layout, config)
+			self:Grid_ConfigAfterCopy(layout, config)		
+		end
+	end
 end
 
---[[ Get current Grid coordinates
+--[[ Retrieve the layout for the specified format
 ]]
-function kMiscellaneous:Grid_GetCoordinates()
+function kMiscellaneous:Grid_GetLayout(raidFormat)
 	if not self:Grid_IsLoaded() then return end
-	return Grid.modules.GridLayout.db.profile.PosX, Grid.modules.GridLayout.db.profile.PosY
+	if not raidFormat or not self.db.profile.grid.layout[raidFormat] then return end
+	return self.db.profile.grid.layout[raidFormat]
+end
+
+--[[ Retrieve the Grid db profile
+]]
+function kMiscellaneous:Grid_GetGridProfile(module)
+	if not self:Grid_IsLoaded() then return end
+	module = module or 'GridLayout'
+	return Grid.modules[module].db.profile
 end
 
 --[[ Get the raid size as appropriate to the position settings
 ]]
-function kMiscellaneous:Grid_GetRaidSize()
+function kMiscellaneous:Grid_GetRaidFormat()
 	local name, instanceType, difficultyID, difficultyName, maxPlayers = GetInstanceInfo()
 	local instanceTypes = {
 		'scenario',
@@ -77,29 +90,169 @@ function kMiscellaneous:Grid_GetRaidSize()
 	end
 end
 
+--[[ Retrieve a saved setting
+]]
+function kMiscellaneous:Grid_GetSetting(raidFormat, key)
+	if not self:Grid_IsLoaded() then return end
+	local layout = self:Grid_GetLayout(raidFormat)
+	if not layout then return end
+	return layout[key]
+end
+
 --[[ Check if Grid is loaded
 ]]
 function kMiscellaneous:Grid_IsLoaded()
 	if not IsAddOnLoaded('Grid') then return end
-	if not Grid or not Grid.modules or not Grid.modules.GridLayout then return end
+	if not Grid or not Grid.modules or not Grid.modules.GridLayout or not Grid.modules.GridFrame then return end
 	return true
 end
 
---[[ Move Grid position
+--[[ Retrieve the config data table from settings
 ]]
-function kMiscellaneous:Grid_SetPosition(x,y)
-	if not self:Grid_IsLoaded() then return end
-	Grid.modules.GridLayout.db.profile.PosX = x
-	Grid.modules.GridLayout.db.profile.PosY = y
-	Grid.modules.GridLayout:RestorePosition()
+function kMiscellaneous:Grid_GetConfig(key)
+	if not self:Grid_IsLoaded() then return end	
+	for iConfig,vConfig in pairs(self.grid.config) do
+		-- Loop through values
+		for iValue,data in pairs(vConfig.values) do
+			if data.localKey == key then
+				return data
+			end
+		end
+	end	
 end
 
---[[ Update Grid settings
+--[[ Process afterCopy
 ]]
-function kMiscellaneous:Grid_Update()
+function kMiscellaneous:Grid_ConfigAfterCopy(layout, config)
+	-- Check if afterCopy exists
+	if config.afterCopy then
+		if type(config.afterCopy) == 'function' then -- Func
+			config.afterCopy(layout[config.localKey])
+		elseif type(config.afterCopy) == 'string' and self[config.beforeCopy] then -- Local
+			self[config.afterCopy](layout[config.localKey])
+		elseif type(config.afterCopy) == 'string' then -- Assume global
+			_G[config.afterCopy](layout[config.localKey])
+		end
+	end	
+end
+
+--[[ Process afterSave
+]]
+function kMiscellaneous:Grid_ConfigAfterSave(config, value)
+	if not config or not type(config) == 'table' then return end
+	-- Check if afterSave
+	if config.afterSave then
+		if type(config.afterSave) == 'function' then -- Func
+			config.afterSave(value)
+		elseif type(config.afterSave) == 'string' and self[config.afterSave] then -- Local
+			self[config.afterSave](value)
+		elseif type(config.afterSave) == 'string' then -- Assume global
+			_G[config.afterSave](value)
+		end
+	end	
+end
+
+--[[ Process afterUpdate
+]]
+function kMiscellaneous:Grid_ConfigAfterUpdate(config)
+	local profile = self:Grid_GetGridProfile(config.module)
+	if not config or not type(config) == 'table' or not profile then return end
+	-- Check if afterUpdate
+	if config.afterUpdate then
+		if type(config.afterUpdate) == 'function' then -- Func
+			config.afterUpdate(profile[config.remoteKey])
+		elseif type(config.afterUpdate) == 'string' and self[config.afterUpdate] then -- Local
+			self[config.afterUpdate](profile[config.remoteKey])
+		elseif type(config.afterUpdate) == 'string' then -- Assume global
+			_G[config.afterUpdate](profile[config.remoteKey])
+		end
+	end	
+end
+
+--[[ Process beforeCopy
+]]
+function kMiscellaneous:Grid_ConfigBeforeCopy(layout, config)
+	local profile = self:Grid_GetGridProfile(config.module)
+	if not config or not type(config) == 'table' or not layout or not type(layout) == 'table' or not profile then return end
+	if config.beforeCopy then
+		if type(config.beforeCopy) == 'function' then -- Func
+			layout[config.localKey] = config.beforeCopy(profile[config.remoteKey])
+		elseif type(config.beforeCopy) == 'string' and self[config.beforeCopy] then -- Local
+			layout[config.localKey] = self[config.beforeCopy](profile[config.remoteKey])
+		elseif type(config.beforeCopy) == 'string' then -- Assume global
+			layout[config.localKey] = _G[config.beforeCopy](profile[config.remoteKey])
+		end
+	else
+		-- Update localKey from remoteKey
+		layout[config.localKey] = profile[config.remoteKey]
+	end
+end
+
+--[[ Process beforeSave
+]]
+function kMiscellaneous:Grid_ConfigBeforeSave(layout, config, value)
+	if not config or not type(config) == 'table' or not layout or not type(layout) == 'table' or not value then return end
+	if config.beforeSave then
+		if type(config.beforeSave) == 'function' then -- Func
+			layout[config.localKey] = config.beforeSave(value)
+		elseif type(config.beforeSave) == 'string' and self[config.beforeSave] then -- Local
+			layout[config.localKey] = self[config.beforeSave](value)
+		elseif type(config.beforeSave) == 'string' then -- Assume global
+			layout[config.localKey] = _G[config.beforeSave](value)
+		end
+	else
+		layout[config.localKey] = value
+	end
+end
+
+--[[ Process beforeUpdate
+]]
+function kMiscellaneous:Grid_ConfigBeforeUpdate(config, value)
+	local profile = self:Grid_GetGridProfile(config.module)
+	if not config or not type(config) == 'table' or not profile then return end
+	if config.beforeUpdate then
+		if type(config.beforeUpdate) == 'function' then -- Func
+			profile[config.remoteKey] = config.beforeUpdate(value)
+		elseif type(config.beforeUpdate) == 'string' and self[config.beforeUpdate] then -- Local
+			profile[config.remoteKey] = self[config.beforeUpdate](value)
+		elseif type(config.beforeUpdate) == 'string' then -- Assume global
+			profile[config.remoteKey] = _G[config.beforeUpdate](value)
+		end
+	else
+		profile[config.remoteKey] = value
+	end
+end
+
+function kMiscellaneous:Grid_SaveSetting(raidFormat, key, value)
 	if not self:Grid_IsLoaded() then return end
-	if not self.db.profile.grid.autoPosition.enabled then return end
-	local size = self:Grid_GetRaidSize()
-	if not size or not self.db.profile.grid.autoPosition[size] then return end
-	self:Grid_SetPosition(self.db.profile.grid.autoPosition[size].x, self.db.profile.grid.autoPosition[size].y)
+	local layout = self:Grid_GetLayout(raidFormat)
+	local config = self:Grid_GetConfig(key)
+	if not layout or not config then return end
+	-- Update local database
+	self:Grid_ConfigBeforeSave(layout, config, value)
+	-- Process afterSave
+	self:Grid_ConfigAfterSave(config, value)
+	-- Update if necessary
+	self:Grid_UpdateSettings()
+end
+
+--[[ Update Grid profile settings to match saved values for current layout format
+]]
+function kMiscellaneous:Grid_UpdateSettings()
+	if not self:Grid_IsLoaded() then return end
+	if not self.db.profile.grid.layout.enabled then return end
+	local layout = self:Grid_GetLayout(self:Grid_GetRaidFormat())
+	self:Debug('Grid_UpdateSettings', 'layout: ', layout, 3)
+	if not layout then return end
+	
+	-- Loop through config
+	for i,v in pairs(self.grid.config) do
+		-- Loop through values
+		for iValue,config in pairs(v.values) do
+			-- Update Grid database
+			self:Grid_ConfigBeforeUpdate(config, layout[config.localKey])
+			-- Process afterUpdate
+			self:Grid_ConfigAfterUpdate(config)
+		end
+	end
 end

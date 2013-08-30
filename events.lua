@@ -12,11 +12,11 @@ end
 function kMiscellaneous:Event_OnRaidInstanceWelcome()
 	self:Debug('Event_OnRaidInstanceWelcome', GetRealZoneText(), 1)
 	-- Update Grid
-	self:Grid_Update()
+	self:Grid_UpdateSettings()
 end
 
 function kMiscellaneous:Event_OnZoneChanged()
 	self:Debug('Event_OnZoneChanged', GetRealZoneText(), 1)
 	-- Update Grid
-	self:Grid_Update()
+	self:Grid_UpdateSettings()
 end
