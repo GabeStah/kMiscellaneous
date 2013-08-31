@@ -66,28 +66,25 @@ function kMiscellaneous:Grid_GetRaidFormat()
 			max = 25,
 		},
 	}
-	if not tContains(instanceTypes) then -- Assume none which is solo
+	if not tContains(instanceTypes, instanceType) then -- Assume none which is solo
 		return 'solo'
 	end
 	-- Check maxplayers for matching sizes entry
 	for size,entry in pairs(sizes) do
-		for i,v in pairs(entry) do
-			if (maxPlayers >= v.min) and (maxPlayers <= v.max) then
+		if (maxPlayers >= entry.min) and (maxPlayers <= entry.max) then
 				-- Size match found, return
-				return size
-			end
+			return size
 		end
 	end
 	-- If no maxplayers entry found, check for current players within valid sizes
 	local currentPlayers = self:Utility_GetPlayerCount()
 	for size,entry in pairs(sizes) do
-		for i,v in pairs(entry) do
-			if (currentPlayers >= v.min) and (currentPlayers <= v.max) then
-				-- Size match found, return
-				return size
-			end
+		if (currentPlayers >= entry.min) and (currentPlayers <= entry.max) then
+			-- Size match found, return
+			return size
 		end
 	end
+	return 'solo'
 end
 
 --[[ Retrieve a saved setting
